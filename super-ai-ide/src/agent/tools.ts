@@ -318,23 +318,73 @@ export function createRunTerminalCommandTool() {
             // 注意：此处不再需要手动调用 confirm，因为 withPermissionCheck 已经处理了
             // 如果 PermissionManager 的 EXECUTE 级别配置了 requiresConfirmation=true，会自动触发确认
 
-            const rootPath = getWorkspaceRoot();
-            const workDir = cwd ? path.join(rootPath, cwd) : rootPath;
+            const config = vscode.workspace.getConfiguration('super-ai-ide');
+            const executionMode = config.get<string>('execution.mode') || 'local';
+            const containerId = config.get<string>('execution.containerId');
+            const userShell = config.get<string>('execution.shell') || undefined;
 
-            if (!fs.existsSync(workDir)) {
-                throw new Error(`Working directory not found: ${cwd || "workspace root"}`);
+            const rootPath = getWorkspaceRoot();
+
+            let finalCommand = command;
+            let finalCwd = rootPath;
+            let execOptions: cp.ExecOptions = {
+                maxBuffer: 10 * 1024 * 1024,
+                encoding: 'utf8'
+            };
+
+            if (executionMode === 'docker') {
+                if (!containerId) {
+                    throw new Error("Execution mode is 'docker' but 'super-ai-ide.execution.containerId' is not configured.");
+                }
+
+                // Construct Docker Command
+                // Strategy: docker exec -i [workdir] container_id [shell] -c "command"
+                // We use "cd <cwd> && command" strategy for working directory to handle relative paths gracefully inside shell
+
+                const targetShell = userShell || "sh";
+
+                // Escape double quotes for the wrapper
+                const escapedCommand = command.replace(/"/g, '\\"');
+
+                let shellCommand = escapedCommand;
+                if (cwd) {
+                    // Try to cd to the directory first. 
+                    // Note: This relies on the container having the same relative structure or 'cwd' being valid inside.
+                    shellCommand = `cd "${cwd}" && ${escapedCommand}`;
+                }
+
+                finalCommand = `docker exec -i ${containerId} ${targetShell} -c "${shellCommand}"`;
+
+                // Execute on host, so cwd is just valid host path (rootPath)
+                finalCwd = rootPath;
+                execOptions.cwd = finalCwd;
+
+            } else {
+                // Local Mode
+                finalCwd = cwd ? path.join(rootPath, cwd) : rootPath;
+
+                if (!fs.existsSync(finalCwd)) {
+                    throw new Error(`Working directory not found: ${cwd || "workspace root"}`);
+                }
+
+                execOptions.cwd = finalCwd;
+                if (userShell) {
+                    execOptions.shell = userShell;
+                }
             }
 
             return new Promise((resolve) => {
-                cp.exec(command, { cwd: workDir, maxBuffer: 10 * 1024 * 1024 }, (error, stdout, stderr) => {
+                cp.exec(finalCommand, execOptions, (error, stdout, stderr) => {
                     if (error) {
                         resolve({
                             success: false,
                             executed: true,
                             command: command,
+                            fullCommand: finalCommand,
+                            mode: executionMode,
                             exitCode: error.code || 1,
-                            stdout: stdout.trim(),
-                            stderr: stderr.trim(),
+                            stdout: (stdout as string).trim(),
+                            stderr: (stderr as string).trim(),
                             error: error.message
                         });
                     } else {
@@ -342,9 +392,11 @@ export function createRunTerminalCommandTool() {
                             success: true,
                             executed: true,
                             command: command,
+                            fullCommand: finalCommand,
+                            mode: executionMode,
                             exitCode: 0,
-                            stdout: stdout.trim(),
-                            stderr: stderr.trim()
+                            stdout: (stdout as string).trim(),
+                            stderr: (stderr as string).trim()
                         });
                     }
                 });
@@ -370,7 +422,12 @@ const basicTools = [
 /**
  * 获取所有工具并应用权限控制
  */
-export function getAllTools(config?: AgentConfig) {
+import { mcpManager } from "./mcp";
+
+/**
+ * 获取所有工具并应用权限控制
+ */
+export async function getAllTools(config?: AgentConfig) {
     // 1. 合并所有工具：基础 + 高级 + 终端
     const allRawTools: StructuredTool[] = [
         ...basicTools,
@@ -384,9 +441,13 @@ export function getAllTools(config?: AgentConfig) {
         allRawTools.push(createRequestSubAgentTool(config));
     }
 
+    // Add MCP Tools
+    const mcpTools = await mcpManager.getLangChainTools();
+    allRawTools.push(...mcpTools);
+
     // 2. 为每个工具应用权限检查包装器
     return allRawTools.map(t => withPermissionCheck(t));
 }
 
-// 向后兼容导出 (不包含 sub-agent)
-export const allTools = getAllTools();
+// 向后兼容需注意 allTools 无法直接导出为 async result，暂时保留同步版本或废弃
+// export const allTools = getAllTools();

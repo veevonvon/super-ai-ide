@@ -4,6 +4,7 @@ import * as path from "path";
 import { runAgentWithStream } from "./agent";
 import { permissionManager, PermissionRequest, PermissionResponse } from "./agent/permissions";
 import { ProviderType } from "./agent/providers/factory";
+import { mcpManager, McpServerConfig } from "./agent/mcp";
 
 interface Message {
     id: string;
@@ -46,6 +47,16 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
         // 初始化权限管理器回调
         this._setupPermissionHandler(webviewView);
+
+        // 初始化 MCP
+        this._initMcp();
+
+        // 监听配置变化
+        vscode.workspace.onDidChangeConfiguration(e => {
+            if (e.affectsConfiguration('super-ai-ide.mcpServers')) {
+                this._initMcp();
+            }
+        });
 
         webviewView.webview.onDidReceiveMessage(async (data) => {
             switch (data.type) {
@@ -143,6 +154,17 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                 });
             });
         });
+    }
+
+    private async _initMcp() {
+        const config = vscode.workspace.getConfiguration('super-ai-ide');
+        const mcpServers = config.get<Record<string, McpServerConfig>>('mcpServers') || {};
+
+        try {
+            await mcpManager.connect(mcpServers);
+        } catch (error) {
+            console.error('Failed to initialize MCP:', error);
+        }
     }
 
     /**

@@ -13,7 +13,10 @@ export { AgentConfig, StreamCallback }; // Re-export for compatibility
 /**
  * 创建 LangGraph ReAct Agent
  */
-export function createAgent(config: AgentConfig) {
+/**
+ * 创建 LangGraph ReAct Agent
+ */
+export async function createAgent(config: AgentConfig) {
     const providerType = config.provider || "openrouter";
     const provider = ProviderFactory.getProvider(providerType);
 
@@ -24,9 +27,11 @@ export function createAgent(config: AgentConfig) {
         temperature: 0.7
     });
 
+    const tools = await getAllTools(config);
+
     const agent = createReactAgent({
         llm,
-        tools: getAllTools(config)
+        tools
     });
 
     return agent;
@@ -107,7 +112,7 @@ export async function runAgentWithStream(
 
         // 2. 执行 Agent (带重试逻辑)
         await retryExecutor.execute(async () => {
-            const agent = createAgent(config);
+            const agent = await createAgent(config);
             fullResponse = ""; // 重置响应缓冲
 
             const stream = agent.streamEvents(
@@ -193,7 +198,7 @@ export async function runAgent(
     ];
 
     return await retryExecutor.execute(async () => {
-        const agent = createAgent(config);
+        const agent = await createAgent(config);
         const result = await agent.invoke(
             { messages: langchainMessages },
             { recursionLimit: config.maxIterations ?? 25 }
@@ -205,3 +210,4 @@ export async function runAgent(
             : JSON.stringify(lastMessage.content);
     });
 }
+

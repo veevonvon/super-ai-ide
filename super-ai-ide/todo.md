@@ -6,13 +6,8 @@
 三、 安全与控制 (Security & Permissions)
 确保 AI 不会对代码库造成不可逆的破坏。
 
-环境隔离 (Environment Isolation)：
 
-支持在特定容器或受限 Shell 环境中运行。
 
 四、 开发者工具链 (Developer Toolset)
 Agent 能够调用的“手”。
 
-MCP 扩展能力 (Model Context Protocol)：
-
-集成外部 MCP 服务器，支持访问第三方工具（如 GitHub API, 数据库）。

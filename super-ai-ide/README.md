@@ -12,8 +12,10 @@ A powerful AI coding assistant extension for VS Code, powered by **LangGraph** a
 - 🧠 **Smart Context Management** - Intelligent token optimization and project-aware prompting
 - 📁 **File System Operations** - Read, write, create, delete, rename files
 - 🔄 **Streaming Responses** - Real-time AI output with tool execution display
+- 🔌 **MCP Support** - Connect to external tools via Model Context Protocol servers
 - 💬 **Multi-Session Support** - Save and manage multiple chat conversations
 - 🌐 **Multi-Provider Architecture** - Seamlessly switch between OpenRouter, OpenAI, and Anthropic
+- 🐳 **Docker & Shell Isolation** - Execute commands safely in Docker containers or custom shells
 
 ## 📁 Project Structure
 
@@ -141,6 +143,10 @@ npm run watch
 3. Set your **OpenRouter API Key** (or provider-specific key)
 4. Choose your preferred **Provider** (OpenRouter, OpenAI, Anthropic)
 5. Choose your preferred **Model** (default: `deepseek/deepseek-chat`)
+6. (Optional) Configure **Execution Mode**:
+   - Set `Execution: Mode` to `docker` to run commands in a container
+   - Set `Execution: Container Id` to your target container
+   - Set `Execution: Shell` to customize the shell (e.g., `/bin/zsh`)
 
 ### Recommended Models
 

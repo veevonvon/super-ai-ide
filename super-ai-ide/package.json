@@ -67,6 +67,34 @@
                     "default": "",
                     "description": "Custom Base URL for API calls (optional)",
                     "order": 4
+                },
+                "super-ai-ide.execution.mode": {
+                    "type": "string",
+                    "enum": [
+                        "local",
+                        "docker"
+                    ],
+                    "default": "local",
+                    "description": "Where to execute terminal commands: 'local' (host machine) or 'docker' (container)",
+                    "order": 5
+                },
+                "super-ai-ide.execution.containerId": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Docker Container ID or Name (required if execution mode is 'docker')",
+                    "order": 6
+                },
+                "super-ai-ide.execution.shell": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Specific shell to use (e.g., /bin/bash, powershell). Leave empty for system default.",
+                    "order": 7
+                },
+                "super-ai-ide.mcpServers": {
+                    "type": "object",
+                    "default": {},
+                    "description": "Configuration for MCP Servers. Format: { \"serverName\": { \"command\": \"...\", \"args\": [...] } }",
+                    "order": 8
                 }
             }
         }
@@ -93,6 +121,7 @@
         "@langchain/core": "^1.1.8",
         "@langchain/langgraph": "^1.0.7",
         "@langchain/openai": "^1.2.0",
+        "@modelcontextprotocol/sdk": "^1.25.1",
         "@types/markdown-it": "^14.1.2",
         "markdown-it": "^14.1.0",
         "zod": "^4.3.5"
