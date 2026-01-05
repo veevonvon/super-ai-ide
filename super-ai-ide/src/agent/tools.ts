@@ -7,6 +7,8 @@ import * as path from "path";
 import * as cp from "child_process";
 import { permissionManager, PermissionLevel } from "./permissions";
 import { advancedFileTools } from "./advancedTools";
+import { AgentConfig } from "./types";
+import { createRequestSubAgentTool } from "./subAgentTool";
 
 /**
  * 获取工作区根路径
@@ -367,17 +369,22 @@ const basicTools = [
 /**
  * 获取所有工具并应用权限控制
  */
-export function getAllTools() {
+export function getAllTools(config?: AgentConfig) {
     // 1. 合并所有工具：基础 + 高级 + 终端
-    const allRawTools = [
+    const allRawTools: StructuredTool[] = [
         ...basicTools,
         ...advancedFileTools,
         createRunTerminalCommandTool()
     ];
 
+    // 如果提供了配置，添加 Sub-Agent 工具
+    if (config) {
+        allRawTools.push(createRequestSubAgentTool(config));
+    }
+
     // 2. 为每个工具应用权限检查包装器
     return allRawTools.map(t => withPermissionCheck(t));
 }
 
-// 向后兼容导出
+// 向后兼容导出 (不包含 sub-agent)
 export const allTools = getAllTools();

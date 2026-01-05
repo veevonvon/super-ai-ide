@@ -1,9 +1,6 @@
 一、 核心运行引擎 (Core Execution Engine)
 Agent 的“大脑”如何思考和采取行动。
 
-子代理协同 (Sub-agent Orchestration)：
-
-支持主 Agent 派生专门处理特定任务（如代码评审、文档编写）的子代理（Sub-agent）。
 
 容错与重试逻辑 (Retry & Revert)：
 

@@ -6,29 +6,9 @@ import { SYSTEM_PROMPT } from "../prompts";
 import { contextManager, EnhancedMessage } from "./context";
 import { retryExecutor, ErrorCategory, classifyError } from "./retry";
 import { ProviderFactory, ProviderType } from "./providers/factory";
+import { AgentConfig, StreamCallback } from "./types";
 
-/**
- * Agent 配置接口
- */
-export interface AgentConfig {
-    apiKey: string;
-    model: string;
-    maxIterations?: number;
-    workspaceName?: string; // 新增：工作区名称
-    provider?: ProviderType;
-    baseUrl?: string;
-}
-
-/**
- * 流式输出回调接口
- */
-export interface StreamCallback {
-    onToken: (token: string) => void;
-    onToolStart: (toolName: string, input: any) => void;
-    onToolEnd: (toolName: string, output: any) => void;
-    onError: (error: Error) => void;
-    onComplete: () => void;
-}
+export { AgentConfig, StreamCallback }; // Re-export for compatibility
 
 /**
  * 创建 LangGraph ReAct Agent
@@ -46,7 +26,7 @@ export function createAgent(config: AgentConfig) {
 
     const agent = createReactAgent({
         llm,
-        tools: getAllTools()
+        tools: getAllTools(config)
     });
 
     return agent;

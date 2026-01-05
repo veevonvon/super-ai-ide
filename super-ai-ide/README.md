@@ -28,7 +28,9 @@ super-ai-ide/
 │   │   ├── context.ts        # Context management & compression
 │   │   ├── permissions.ts    # Security & permission system
 │   │   ├── retry.ts          # Retry logic & error recovery
-│   │   └── advancedTools.ts  # Smart editing & search tools
+│   │   ├── advancedTools.ts  # Smart editing & search tools
+│   │   ├── types.ts          # Shared types
+│   │   └── subAgentTool.ts   # Sub-agent orchestration tool
 │   └── webview/
 │       └── index.html        # Chat UI template
 ├── out/                      # Compiled JavaScript output
@@ -102,6 +104,7 @@ Streaming Response (with Dry Run previews)
 | `find_symbol` | Find functions/classes/variables |
 | **System** | |
 | `run_terminal_command` | Execute shell commands (Requires Approval) |
+| `request_sub_agent` | Delegate task to specialized sub-agent |
 
 ## 🚀 Getting Started
 
