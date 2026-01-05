@@ -13,38 +13,12 @@
 三、 安全与控制 (Security & Permissions)
 确保 AI 不会对代码库造成不可逆的破坏。
 
-细粒度权限拦截 (Permission Gate)：
-
-区分“读操作”和“写操作”。
-
-对敏感工具（如 bash, write, delete）强制触发用户手动确认。
-
 环境隔离 (Environment Isolation)：
 
 支持在特定容器或受限 Shell 环境中运行。
 
-操作预览 (Dry Run / Proposal)：
-
-Agent 在实际修改文件前，先生成 Diff 或计划书供用户审批。
-
 四、 开发者工具链 (Developer Toolset)
 Agent 能够调用的“手”。
-
-文件系统操作 (File Ops)：
-
-ls (列出目录)、read (读取文件)、write (写文件)。
-
-glob / ripgrep：高性能的全局搜索和模式匹配。
-
-智能代码编辑 (Search & Replace)：
-
-提供局部编辑工具（如基于字符串匹配的替换），而不是每次重写整个文件，以节省 Token。
-
-
-
-终端执行 (Bash Tool)：
-
-Agent 可直接运行编译、测试命令（npm test, cargo build）并获取报错信息进行修复。
 
 MCP 扩展能力 (Model Context Protocol)：
 
