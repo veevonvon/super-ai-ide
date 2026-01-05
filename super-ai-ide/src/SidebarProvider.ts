@@ -3,6 +3,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { runAgentWithStream } from "./agent";
 import { permissionManager, PermissionRequest, PermissionResponse } from "./agent/permissions";
+import { ProviderType } from "./agent/providers/factory";
 
 interface Message {
     role: string;
@@ -147,12 +148,15 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
             return;
         }
 
+
         // 3. Start streaming
         webviewView.webview.postMessage({ type: 'startStream' });
 
         try {
             // 获取当前工作区名称
             const workspaceName = vscode.workspace.workspaceFolders?.[0]?.name;
+            const provider = config.get<string>('provider') as any || 'openrouter';
+            const baseUrl = config.get<string>('baseUrl');
 
             // 4. Run Agent with new features
             const fullAiResponse = await runAgentWithStream(
@@ -160,7 +164,9 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                     apiKey,
                     model,
                     maxIterations: 25,
-                    workspaceName
+                    workspaceName,
+                    provider,
+                    baseUrl
                 },
                 session?.messages || [],
                 {

@@ -5,6 +5,7 @@ import { getAllTools } from "./tools";
 import { SYSTEM_PROMPT } from "../prompts";
 import { contextManager, EnhancedMessage } from "./context";
 import { retryExecutor, ErrorCategory, classifyError } from "./retry";
+import { ProviderFactory, ProviderType } from "./providers/factory";
 
 /**
  * Agent 配置接口
@@ -14,6 +15,8 @@ export interface AgentConfig {
     model: string;
     maxIterations?: number;
     workspaceName?: string; // 新增：工作区名称
+    provider?: ProviderType;
+    baseUrl?: string;
 }
 
 /**
@@ -31,13 +34,13 @@ export interface StreamCallback {
  * 创建 LangGraph ReAct Agent
  */
 export function createAgent(config: AgentConfig) {
-    const llm = new ChatOpenAI({
-        modelName: config.model,
+    const providerType = config.provider || "openrouter";
+    const provider = ProviderFactory.getProvider(providerType);
+
+    const llm = provider.createModel({
         apiKey: config.apiKey,
-        configuration: {
-            baseURL: "https://openrouter.ai/api/v1"
-        },
-        streaming: true,
+        modelName: config.model,
+        baseUrl: config.baseUrl,
         temperature: 0.7
     });
 
@@ -85,8 +88,13 @@ export async function runAgentWithStream(
         const baseSystemPrompt = SYSTEM_PROMPT;
         const projectAwarePrompt = await contextManager.generateProjectAwarePrompt(baseSystemPrompt);
 
+        // 1.2.1 针对 Provider 优化 Prompt
+        const providerType = config.provider || "openrouter";
+        const provider = ProviderFactory.getProvider(providerType);
+        const customizedPrompt = provider.customizeSystemPrompt(projectAwarePrompt);
+
         // 1.3 转换为 LangChain 格式
-        const langchainMessages = contextManager.toLangChainMessages(compactedMessages, projectAwarePrompt);
+        const langchainMessages = contextManager.toLangChainMessages(compactedMessages, customizedPrompt);
 
         // 2. 执行 Agent (带重试逻辑)
         await retryExecutor.execute(async () => {
@@ -164,9 +172,14 @@ export async function runAgent(
     // 简单调用也应该享受部分上下文管理的好处，如 System Prompt
     const projectAwarePrompt = await contextManager.generateProjectAwarePrompt(SYSTEM_PROMPT);
 
+    // 针对 Provider 优化
+    const providerType = config.provider || "openrouter";
+    const provider = ProviderFactory.getProvider(providerType);
+    const customizedPrompt = provider.customizeSystemPrompt(projectAwarePrompt);
+
     // 简化处理，不进行压缩
     const langchainMessages: BaseMessage[] = [
-        new SystemMessage(projectAwarePrompt),
+        new SystemMessage(customizedPrompt),
         ...messages.map(m => m.role === "user" ? new HumanMessage(m.content) : new AIMessage(m.content))
     ];
 

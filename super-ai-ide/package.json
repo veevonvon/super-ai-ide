@@ -50,6 +50,23 @@
                     "default": "deepseek/deepseek-chat",
                     "description": "The Model ID to use via OpenRouter (recommend models with tool calling support)",
                     "order": 2
+                },
+                "super-ai-ide.provider": {
+                    "type": "string",
+                    "enum": [
+                        "openrouter",
+                        "openai",
+                        "anthropic"
+                    ],
+                    "default": "openrouter",
+                    "description": "The AI Provider to use",
+                    "order": 3
+                },
+                "super-ai-ide.baseUrl": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Custom Base URL for API calls (optional)",
+                    "order": 4
                 }
             }
         }
@@ -72,6 +89,7 @@
         "typescript": "^5.0.0"
     },
     "dependencies": {
+        "@langchain/anthropic": "^1.3.3",
         "@langchain/core": "^1.1.8",
         "@langchain/langgraph": "^1.0.7",
         "@langchain/openai": "^1.2.0",

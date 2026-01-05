@@ -11,7 +11,7 @@ A powerful AI coding assistant extension for VS Code, powered by **LangGraph** a
 - 📁 **File System Operations** - Read, write, create, delete, rename files
 - 🔄 **Streaming Responses** - Real-time AI output with tool execution display
 - 💬 **Multi-Session Support** - Save and manage multiple chat conversations
-- 🌐 **OpenRouter Integration** - Access to 100+ AI models
+- 🌐 **Multi-Provider Architecture** - Seamlessly switch between OpenRouter, OpenAI, and Anthropic
 
 ## 📁 Project Structure
 
@@ -23,6 +23,7 @@ super-ai-ide/
 │   ├── prompts.ts            # System prompts & model config
 │   ├── agent/                # LangGraph Agent (Core AI Logic)
 │   │   ├── index.ts          # Agent runtime & composition
+│   │   ├── providers/        # Multi-provider implementation
 │   │   ├── tools.ts          # Tool definitions & wrappers
 │   │   ├── context.ts        # Context management & compression
 │   │   ├── permissions.ts    # Security & permission system
@@ -127,8 +128,9 @@ npm run watch
 
 1. Open VS Code Settings (`Ctrl+,`)
 2. Search for "Super AI IDE"
-3. Set your **OpenRouter API Key**
-4. Choose your preferred **Model** (default: `deepseek/deepseek-chat`)
+3. Set your **OpenRouter API Key** (or provider-specific key)
+4. Choose your preferred **Provider** (OpenRouter, OpenAI, Anthropic)
+5. Choose your preferred **Model** (default: `deepseek/deepseek-chat`)
 
 ### Recommended Models
 
@@ -158,6 +160,7 @@ npm run package
 ### Core
 - `@langchain/langgraph` - LangGraph agent framework
 - `@langchain/openai` - OpenAI-compatible LLM provider
+- `@langchain/anthropic` - Anthropic Claude provider
 - `@langchain/core` - LangChain core utilities
 - `zod` - Schema validation for tools
 
