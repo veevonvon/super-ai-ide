@@ -768,6 +768,72 @@
         .command-confirm-actions .btn-confirm:hover {
             box-shadow: 0 6px 20px rgba(56, 239, 125, 0.4);
         }
+
+        /* Tags */
+        .message-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+            align-items: center;
+        }
+
+        .message-tag {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-size: 0.75em;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.2s;
+        }
+
+        .message-tag:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .message-tag-remove {
+            cursor: pointer;
+            font-size: 1.1em;
+            opacity: 0.6;
+            line-height: 1;
+        }
+
+        .message-tag-remove:hover {
+            opacity: 1;
+            color: #f45c43;
+        }
+
+        .add-tag-btn {
+            background: none;
+            border: 1px dashed rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.5);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .add-tag-btn:hover {
+            border-color: rgba(255, 255, 255, 0.6);
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .tag-input {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-size: 0.75em;
+            width: 80px;
+            outline: none;
+            font-family: inherit;
+        }
     </style>
 </head>
 
@@ -1024,12 +1090,12 @@
             } else {
                 newEmptyState.style.display = 'none';
                 session.messages.forEach(msg => {
-                    addMessage(msg.content, msg.role === 'user' ? 'user' : 'ai');
+                    addMessage(msg.content, msg.role === 'user' ? 'user' : 'ai', msg.id, msg.tags);
                 });
             }
         }
 
-        function addMessage(text, type) {
+        function addMessage(text, type, id, tags) {
             hideEmptyState();
             const msg = document.createElement('div');
             msg.className = 'message ' + type;
@@ -1038,6 +1104,58 @@
             } else {
                 msg.innerText = text;
             }
+
+            // Render tags/actions only if we have an ID (persisted message)
+            if (id) {
+                const tagsContainer = document.createElement('div');
+                tagsContainer.className = 'message-tags';
+
+                if (tags && tags.length > 0) {
+                    tags.forEach(tag => {
+                        const tagEl = document.createElement('span');
+                        tagEl.className = 'message-tag';
+                        tagEl.innerHTML = `#${tag} <span class="message-tag-remove">×</span>`;
+                        tagEl.querySelector('.message-tag-remove').onclick = () => {
+                            vscode.postMessage({ type: 'removeTag', messageId: id, tag: tag });
+                        };
+                        tagsContainer.appendChild(tagEl);
+                    });
+                }
+
+                const addTagBtn = document.createElement('button');
+                addTagBtn.className = 'add-tag-btn';
+                addTagBtn.innerText = '+ Tag';
+                addTagBtn.onclick = () => {
+                    addTagBtn.style.display = 'none';
+                    const input = document.createElement('input');
+                    input.className = 'tag-input';
+                    input.placeholder = 'Tag...';
+                    input.onkeydown = (e) => {
+                        if (e.key === 'Enter') {
+                            const tag = input.value.trim();
+                            if (tag) {
+                                vscode.postMessage({ type: 'addTag', messageId: id, tag: tag });
+                            }
+                            cleanup();
+                        } else if (e.key === 'Escape') {
+                            cleanup();
+                        }
+                    };
+                    input.onblur = cleanup;
+
+                    function cleanup() {
+                        input.remove();
+                        addTagBtn.style.display = 'inline-block';
+                    }
+
+                    tagsContainer.appendChild(input);
+                    input.focus();
+                };
+                tagsContainer.appendChild(addTagBtn);
+
+                msg.appendChild(tagsContainer);
+            }
+
             messagesDiv.appendChild(msg);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }

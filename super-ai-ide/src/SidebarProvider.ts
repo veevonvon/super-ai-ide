@@ -6,8 +6,11 @@ import { permissionManager, PermissionRequest, PermissionResponse } from "./agen
 import { ProviderType } from "./agent/providers/factory";
 
 interface Message {
+    id: string;
     role: string;
     content: string;
+    tags?: string[];
+    timestamp?: number;
 }
 
 interface Session {
@@ -97,6 +100,16 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                     await this._undoLastMessage();
                     break;
                 }
+                case "addTag": {
+                    const { messageId, tag } = data;
+                    await this._addTag(messageId, tag);
+                    break;
+                }
+                case "removeTag": {
+                    const { messageId, tag } = data;
+                    await this._removeTag(messageId, tag);
+                    break;
+                }
             }
         });
     }
@@ -131,11 +144,17 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
      * 处理 AI 请求
      */
     private async _handleAskAI(text: string, webviewView: vscode.WebviewView) {
+
         // 1. Save User Message
         const sessions = this._getSessions();
         const session = sessions.find(s => s.id === this._currentSessionId);
         if (session) {
-            session.messages.push({ role: "user", content: text });
+            session.messages.push({
+                id: Date.now().toString() + Math.random().toString().slice(2, 5),
+                role: "user",
+                content: text,
+                timestamp: Date.now()
+            });
             await this._saveSessions(sessions);
         }
 
@@ -209,7 +228,12 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
             // 5. Save AI message
             if (session && fullAiResponse) {
-                session.messages.push({ role: "assistant", content: fullAiResponse });
+                session.messages.push({
+                    id: Date.now().toString() + Math.random().toString().slice(2, 5),
+                    role: "assistant",
+                    content: fullAiResponse,
+                    timestamp: Date.now()
+                });
                 if (session.messages.length <= 2) {
                     session.name = text.slice(0, 30) + (text.length > 30 ? "..." : "");
                 }
@@ -298,6 +322,39 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         const session = sessions.find(s => s.id === id);
         if (session && this._view) {
             this._view.webview.postMessage({ type: "loadChat", value: session });
+        }
+    }
+
+    private async _addTag(messageId: string, tag: string) {
+        const sessions = this._getSessions();
+        const session = sessions.find(s => s.id === this._currentSessionId);
+        if (!session) return;
+
+        const message = session.messages.find(m => m.id === messageId);
+        if (message) {
+            if (!message.tags) message.tags = [];
+            if (!message.tags.includes(tag)) {
+                message.tags.push(tag);
+                await this._saveSessions(sessions);
+                if (this._view) {
+                    this._view.webview.postMessage({ type: "loadChat", value: session });
+                }
+            }
+        }
+    }
+
+    private async _removeTag(messageId: string, tag: string) {
+        const sessions = this._getSessions();
+        const session = sessions.find(s => s.id === this._currentSessionId);
+        if (!session) return;
+
+        const message = session.messages.find(m => m.id === messageId);
+        if (message && message.tags) {
+            message.tags = message.tags.filter(t => t !== tag);
+            await this._saveSessions(sessions);
+            if (this._view) {
+                this._view.webview.postMessage({ type: "loadChat", value: session });
+            }
         }
     }
 
