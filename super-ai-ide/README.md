@@ -6,6 +6,7 @@ A powerful AI coding assistant extension for VS Code, powered by **LangGraph** a
 
 - 🤖 **AI Chat Sidebar** - Markdown rendering, syntax highlighting, and granular session history control (Undo Last Interaction)
 - 🏷️ **Message Tagging** - Organize and persist key messages with custom tags
+- 🔀 **Session Forking** - Branch conversations from any point to explore new directions
 - 🔧 **LangGraph Agent** - Automatic tool calling with ReAct pattern
 - 🛡️ **Enterprise-Grade Security** - Granular permission system for sensitive operations
 - 🧠 **Smart Context Management** - Intelligent token optimization and project-aware prompting

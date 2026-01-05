@@ -1153,6 +1153,17 @@
                 };
                 tagsContainer.appendChild(addTagBtn);
 
+                // Fork Button
+                const forkBtn = document.createElement('button');
+                forkBtn.className = 'add-tag-btn';
+                forkBtn.innerHTML = '🔀 Fork';
+                forkBtn.title = 'Create a new session starting from here';
+                forkBtn.style.marginLeft = '4px';
+                forkBtn.onclick = () => {
+                    vscode.postMessage({ type: 'forkSession', messageId: id });
+                };
+                tagsContainer.appendChild(forkBtn);
+
                 msg.appendChild(tagsContainer);
             }
 

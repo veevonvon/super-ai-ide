@@ -110,6 +110,11 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                     await this._removeTag(messageId, tag);
                     break;
                 }
+                case "forkSession": {
+                    const { messageId } = data;
+                    await this._forkSession(messageId);
+                    break;
+                }
             }
         });
     }
@@ -355,6 +360,37 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
             if (this._view) {
                 this._view.webview.postMessage({ type: "loadChat", value: session });
             }
+        }
+    }
+
+    private async _forkSession(messageId: string) {
+        const sessions = this._getSessions();
+        const currentSession = sessions.find(s => s.id === this._currentSessionId);
+        if (!currentSession) return;
+
+        const messageIndex = currentSession.messages.findIndex(m => m.id === messageId);
+        if (messageIndex === -1) return;
+
+        // Clone messages up to the point of fork
+        // We regenerate IDs for the new session to keep them independent
+        const forkedMessages = currentSession.messages.slice(0, messageIndex + 1).map(m => ({
+            ...m,
+            id: Date.now().toString() + Math.random().toString().slice(2, 5), // New ID
+            timestamp: Date.now() // Update timestamp for the fork moment? Or keep original? Let's update to current to avoid confusion in sorting if used. Actually keeping original might be better for history, but new ID is critical.
+        }));
+
+        const newSession: Session = {
+            id: Date.now().toString(),
+            name: `Fork: ${currentSession.name}`,
+            messages: forkedMessages
+        };
+
+        sessions.unshift(newSession);
+        await this._saveSessions(sessions);
+        this._selectSession(newSession.id);
+
+        if (this._view) {
+            this._view.webview.postMessage({ type: "updateSessions", value: sessions });
         }
     }
 
