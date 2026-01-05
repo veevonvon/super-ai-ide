@@ -2,17 +2,8 @@
 
 ------
 
-一、 核心运行引擎 (Core Execution Engine)
-Agent 的“大脑”如何思考和采取行动。
-
-
-
-
 二、 上下文管理 (Context & Token Management)
 如何让 Agent 在有限的长文本窗口内处理大型项目。
-
-
-
 消息生命周期管理：
 
 支持对消息进行标签（Tags）标记和持久化。
@@ -49,9 +40,7 @@ glob / ripgrep：高性能的全局搜索和模式匹配。
 
 提供局部编辑工具（如基于字符串匹配的替换），而不是每次重写整个文件，以节省 Token。
 
-语言服务器集成 (LSP Integration)：
 
-通过 LSP 获取类型定义、符号引用、跳转到定义等精确信息，提升 Agent 的代码理解力。
 
 终端执行 (Bash Tool)：
 

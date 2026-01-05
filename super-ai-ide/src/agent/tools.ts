@@ -9,6 +9,7 @@ import { permissionManager, PermissionLevel } from "./permissions";
 import { advancedFileTools } from "./advancedTools";
 import { AgentConfig } from "./types";
 import { createRequestSubAgentTool } from "./subAgentTool";
+import { lspTools } from "./lspTools";
 
 /**
  * 获取工作区根路径
@@ -374,6 +375,7 @@ export function getAllTools(config?: AgentConfig) {
     const allRawTools: StructuredTool[] = [
         ...basicTools,
         ...advancedFileTools,
+        ...lspTools,
         createRunTerminalCommandTool()
     ];
 

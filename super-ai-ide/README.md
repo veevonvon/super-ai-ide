@@ -29,6 +29,7 @@ super-ai-ide/
 │   │   ├── permissions.ts    # Security & permission system
 │   │   ├── retry.ts          # Retry logic & error recovery
 │   │   ├── advancedTools.ts  # Smart editing & search tools
+│   │   ├── lspTools.ts       # LSP integration (Def/Ref/Diag)
 │   │   ├── types.ts          # Shared types
 │   │   └── subAgentTool.ts   # Sub-agent orchestration tool
 │   └── webview/
@@ -102,6 +103,10 @@ Streaming Response (with Dry Run previews)
 | `apply_patch` | Apply unified diff patch |
 | `grep_search` | High-performance regex search (ripgrep) |
 | `find_symbol` | Find functions/classes/variables |
+| **LSP Tools** | |
+| `get_symbol_definition` | Get symbol definition location |
+| `get_symbol_references` | Find symbol references |
+| `get_file_diagnostics` | Get errors/warnings for file |
 | **System** | |
 | `run_terminal_command` | Execute shell commands (Requires Approval) |
 | `request_sub_agent` | Delegate task to specialized sub-agent |
