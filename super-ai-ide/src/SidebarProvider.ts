@@ -93,6 +93,10 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                     vscode.commands.executeCommand('workbench.action.openSettings', 'super-ai-ide');
                     break;
                 }
+                case "undoLastMessage": {
+                    await this._undoLastMessage();
+                    break;
+                }
             }
         });
     }
@@ -260,6 +264,31 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         }
         if (this._view) {
             this._view.webview.postMessage({ type: "updateSessions", value: sessions });
+        }
+    }
+
+    private async _undoLastMessage() {
+        const sessions = this._getSessions();
+        const session = sessions.find(s => s.id === this._currentSessionId);
+        if (!session || session.messages.length === 0) {
+            return;
+        }
+
+        // Remove last Assistant message if it exists
+        if (session.messages[session.messages.length - 1].role === 'assistant') {
+            session.messages.pop();
+        }
+
+        // Remove last User message if it exists
+        if (session.messages.length > 0 && session.messages[session.messages.length - 1].role === 'user') {
+            session.messages.pop();
+        }
+
+        await this._saveSessions(sessions);
+
+        if (this._view) {
+            this._view.webview.postMessage({ type: "updateSessions", value: sessions });
+            this._view.webview.postMessage({ type: "loadChat", value: session });
         }
     }
 

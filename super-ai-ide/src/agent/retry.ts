@@ -70,7 +70,8 @@ export const DEFAULT_RETRY_STRATEGY: RetryStrategy = {
         ErrorCategory.LLM_RATE_LIMIT,
         ErrorCategory.LLM_TIMEOUT,
         ErrorCategory.NETWORK_ERROR,
-        ErrorCategory.TOOL_EXECUTION_ERROR
+        ErrorCategory.TOOL_EXECUTION_ERROR,
+        ErrorCategory.LLM_FORMAT_ERROR
     ]
 };
 

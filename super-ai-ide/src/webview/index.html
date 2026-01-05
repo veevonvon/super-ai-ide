@@ -788,6 +788,8 @@
             </div>
         </div>
         <div class="input-group">
+            <button id="undoBtn" class="secondary" title="Undo Last Interaction"
+                style="padding: 0 14px; font-size: 1.2em;">↩️</button>
             <input type="text" id="userInput" placeholder="Ask AI something amazing..." />
             <button id="sendBtn">Send ✨</button>
         </div>
@@ -822,6 +824,7 @@
         const historyBtn = document.getElementById('historyBtn');
         const backBtn = document.getElementById('backBtn');
         const settingsBtn = document.getElementById('settingsBtn');
+        const undoBtn = document.getElementById('undoBtn');
         const emptyState = document.getElementById('emptyState');
 
         // State
@@ -845,6 +848,10 @@
 
         settingsBtn.addEventListener('click', () => {
             vscode.postMessage({ type: 'openSettings' });
+        });
+
+        undoBtn.addEventListener('click', () => {
+            vscode.postMessage({ type: 'undoLastMessage' });
         });
 
         newSessionBtn.addEventListener('click', () => {
