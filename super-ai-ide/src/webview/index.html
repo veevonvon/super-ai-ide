@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.0.0/dist/markdown-it.min.js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-success: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            --gradient-warning: linear-gradient(135deg, #f2994a 0%, #f2c94c 100%);
+            --gradient-error: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+            --gradient-tool: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+
+            --border-radius-sm: 8px;
+            --border-radius-md: 12px;
+            --border-radius-lg: 16px;
+            --border-radius-xl: 20px;
+
+            --transition-fast: 0.15s ease;
+            --transition-normal: 0.25s ease;
+            --transition-slow: 0.4s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', var(--vscode-font-family), sans-serif;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            color: var(--vscode-editor-foreground);
+            background: var(--vscode-editor-background);
+            overflow: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Views */
+        .view {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Header */
+        .header {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .header-left {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .header-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Session List (History) */
+        .session-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+        }
+
+        .session-item {
+            padding: 14px 16px;
+            margin-bottom: 8px;
+            border-radius: var(--border-radius-md);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            transition: all var(--transition-normal);
+        }
+
+        .session-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+
+        .session-item-text {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .session-item-icon {
+            font-size: 1.2em;
+        }
+
+        .session-item span {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            flex: 1;
+            font-size: 0.95em;
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            font-size: 1.2em;
+            padding: 4px 8px;
+            border-radius: var(--border-radius-sm);
+            transition: all var(--transition-fast);
+            opacity: 0;
+        }
+
+        .session-item:hover .delete-btn {
+            opacity: 1;
+        }
+
+        .delete-btn:hover {
+            color: #f45c43;
+            background: rgba(244, 92, 67, 0.1);
+        }
+
+        /* Chat Area */
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Input Group */
+        .input-group {
+            padding: 16px;
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            gap: 12px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        input {
+            flex: 1;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--vscode-input-foreground);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius-lg);
+            font-size: 0.95em;
+            transition: all var(--transition-normal);
+            font-family: inherit;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: rgba(102, 126, 234, 0.5);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Buttons */
+        button {
+            padding: 10px 20px;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: var(--border-radius-md);
+            font-weight: 500;
+            font-size: 0.9em;
+            transition: all var(--transition-normal);
+            font-family: inherit;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button.secondary {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+        }
+
+        button.secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: none;
+        }
+
+        button.icon-btn {
+            background: transparent;
+            color: var(--vscode-icon-foreground);
+            padding: 8px;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            border-radius: var(--border-radius-sm);
+        }
+
+        button.icon-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* Message Bubbles */
+        .message {
+            padding: 16px 20px;
+            border-radius: var(--border-radius-lg);
+            line-height: 1.6;
+            word-wrap: break-word;
+            animation: messageSlideIn 0.3s ease;
+            max-width: 100%;
+        }
+
+        @keyframes messageSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background: var(--gradient-primary);
+            color: white;
+            max-width: 85%;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .message.ai {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            position: relative;
+        }
+
+        /* Markdown Styles in AI Messages */
+        .message.ai pre {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 16px;
+            border-radius: var(--border-radius-md);
+            overflow-x: auto;
+            margin: 12px 0;
+            border: 1px solid var(--glass-border);
+            position: relative;
+        }
+
+        .message.ai code {
+            font-family: 'JetBrains Mono', var(--vscode-editor-font-family), 'Courier New', monospace;
+            font-size: 0.85em;
+        }
+
+        .message.ai p {
+            margin: 8px 0;
+        }
+
+        .message.ai p:first-child {
+            margin-top: 0;
+        }
+
+        .message.ai p:last-child {
+            margin-bottom: 0;
+        }
+
+        .message.ai ul,
+        .message.ai ol {
+            margin: 8px 0;
+            padding-left: 24px;
+        }
+
+        .message.ai li {
+            margin: 4px 0;
+        }
+
+        .message.ai a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .message.ai a:hover {
+            text-decoration: underline;
+        }
+
+        .message.ai blockquote {
+            border-left: 3px solid #667eea;
+            padding-left: 16px;
+            margin: 12px 0;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Tool Call Card */
+        .tool-call-card {
+            background: rgba(79, 172, 254, 0.08);
+            border: 1px solid rgba(79, 172, 254, 0.2);
+            border-radius: var(--border-radius-md);
+            margin: 16px 0;
+            overflow: hidden;
+            animation: toolCallSlideIn 0.3s ease;
+        }
+
+        @keyframes toolCallSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px) scale(0.98);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .tool-call-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            background: rgba(79, 172, 254, 0.1);
+            cursor: pointer;
+            transition: background var(--transition-fast);
+            user-select: none;
+        }
+
+        .tool-call-header:hover {
+            background: rgba(79, 172, 254, 0.15);
+        }
+
+        .tool-call-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--border-radius-sm);
+            background: var(--gradient-tool);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1em;
+            flex-shrink: 0;
+        }
+
+        .tool-call-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .tool-call-name {
+            font-weight: 600;
+            font-size: 0.95em;
+            color: #4facfe;
+        }
+
+        .tool-call-status {
+            font-size: 0.8em;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 2px;
+        }
+
+        .tool-call-toggle {
+            font-size: 1.2em;
+            color: rgba(255, 255, 255, 0.5);
+            transition: transform var(--transition-normal);
+        }
+
+        .tool-call-card.expanded .tool-call-toggle {
+            transform: rotate(180deg);
+        }
+
+        .tool-call-body {
+            display: none;
+            padding: 0;
+            border-top: 1px solid rgba(79, 172, 254, 0.15);
+        }
+
+        .tool-call-card.expanded .tool-call-body {
+            display: block;
+        }
+
+        .tool-call-section {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(79, 172, 254, 0.1);
+        }
+
+        .tool-call-section:last-child {
+            border-bottom: none;
+        }
+
+        .tool-call-section-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.75em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .tool-call-section-title .icon {
+            font-size: 1.1em;
+        }
+
+        .tool-call-code {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: var(--border-radius-sm);
+            padding: 12px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82em;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        /* Tool Result Status */
+        .tool-result-success .tool-call-section-title {
+            color: #38ef7d;
+        }
+
+        .tool-result-error .tool-call-section-title {
+            color: #f45c43;
+        }
+
+        /* Spinner for loading state */
+        .tool-call-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(79, 172, 254, 0.3);
+            border-top-color: #4facfe;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Typing Indicator */
+        .typing-indicator {
+            display: flex;
+            gap: 6px;
+            padding: 16px 20px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius-lg);
+            width: fit-content;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #667eea;
+            border-radius: 50%;
+            animation: typingBounce 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes typingBounce {
+
+            0%,
+            80%,
+            100% {
+                transform: scale(0.7);
+                opacity: 0.5;
+            }
+
+            40% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Empty State */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            padding: 40px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .empty-state-icon {
+            font-size: 3em;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state-text {
+            font-size: 1.1em;
+            margin-bottom: 8px;
+        }
+
+        .empty-state-hint {
+            font-size: 0.85em;
+            opacity: 0.7;
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background: rgba(56, 239, 125, 0.15);
+            color: #38ef7d;
+        }
+
+        .badge-error {
+            background: rgba(244, 92, 67, 0.15);
+            color: #f45c43;
+        }
+
+        .badge-running {
+            background: rgba(79, 172, 254, 0.15);
+            color: #4facfe;
+        }
+
+        /* History View Header */
+        .history-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .history-header .header-title {
+            flex: 1;
+        }
+
+        /* Command Confirm Modal */
+        .command-confirm-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .command-confirm-modal {
+            background: var(--vscode-editor-background);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius-lg);
+            max-width: 500px;
+            width: 90%;
+            padding: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.25s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .command-confirm-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .command-confirm-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-warning);
+            border-radius: var(--border-radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3em;
+        }
+
+        .command-confirm-title {
+            flex: 1;
+        }
+
+        .command-confirm-title h3 {
+            margin: 0 0 4px 0;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--vscode-editor-foreground);
+        }
+
+        .command-confirm-title p {
+            margin: 0;
+            font-size: 0.85em;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .command-confirm-body {
+            margin-bottom: 20px;
+        }
+
+        .command-confirm-label {
+            font-size: 0.75em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .command-confirm-code {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius-sm);
+            padding: 14px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9em;
+            color: #f2c94c;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .command-confirm-cwd {
+            margin-top: 12px;
+            font-size: 0.85em;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .command-confirm-cwd span {
+            color: #4facfe;
+        }
+
+        .command-confirm-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .command-confirm-actions button {
+            padding: 10px 24px;
+            min-width: 100px;
+        }
+
+        .command-confirm-actions .btn-reject {
+            background: rgba(244, 92, 67, 0.15);
+            color: #f45c43;
+            border: 1px solid rgba(244, 92, 67, 0.3);
+        }
+
+        .command-confirm-actions .btn-reject:hover {
+            background: rgba(244, 92, 67, 0.25);
+            box-shadow: none;
+        }
+
+        .command-confirm-actions .btn-confirm {
+            background: var(--gradient-success);
+        }
+
+        .command-confirm-actions .btn-confirm:hover {
+            box-shadow: 0 6px 20px rgba(56, 239, 125, 0.4);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="chat-view" class="view">
+        <div class="header">
+            <div class="header-left">
+                <button id="historyBtn" class="secondary" title="View History">📚 History</button>
+                <button id="newSessionBtn" class="icon-btn" title="New Chat">✨</button>
+            </div>
+            <button id="settingsBtn" class="icon-btn" title="Settings">⚙️</button>
+        </div>
+        <div class="messages" id="messages">
+            <div class="empty-state" id="emptyState">
+                <div class="empty-state-icon">🤖</div>
+                <div class="empty-state-text">Start a conversation</div>
+                <div class="empty-state-hint">Ask me anything about your code...</div>
+            </div>
+        </div>
+        <div class="input-group">
+            <input type="text" id="userInput" placeholder="Ask AI something amazing..." />
+            <button id="sendBtn">Send ✨</button>
+        </div>
+    </div>
+
+    <div id="history-view" class="view hidden">
+        <div class="header">
+            <div class="history-header" style="width: 100%;">
+                <button id="backBtn" class="icon-btn" title="Back">←</button>
+                <span class="header-title">Chat History</span>
+            </div>
+        </div>
+        <div class="session-list" id="sessionList"></div>
+    </div>
+
+    <script>
+        const vscode = acquireVsCodeApi();
+        const md = window.markdownit({
+            html: true,
+            breaks: true,
+            linkify: true
+        });
+
+        // DOM Elements
+        const chatView = document.getElementById('chat-view');
+        const historyView = document.getElementById('history-view');
+        const sessionList = document.getElementById('sessionList');
+        const messagesDiv = document.getElementById('messages');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const newSessionBtn = document.getElementById('newSessionBtn');
+        const historyBtn = document.getElementById('historyBtn');
+        const backBtn = document.getElementById('backBtn');
+        const settingsBtn = document.getElementById('settingsBtn');
+        const emptyState = document.getElementById('emptyState');
+
+        // State
+        let currentAiMessageDiv = null;
+        let currentAiMessageContent = "";
+        let pendingToolCalls = new Map(); // Store pending tool calls by ID
+
+        // Initialize
+        vscode.postMessage({ type: 'init' });
+
+        // Navigation Events
+        historyBtn.addEventListener('click', () => {
+            chatView.classList.add('hidden');
+            historyView.classList.remove('hidden');
+        });
+
+        backBtn.addEventListener('click', () => {
+            historyView.classList.add('hidden');
+            chatView.classList.remove('hidden');
+        });
+
+        settingsBtn.addEventListener('click', () => {
+            vscode.postMessage({ type: 'openSettings' });
+        });
+
+        newSessionBtn.addEventListener('click', () => {
+            vscode.postMessage({ type: 'createSession' });
+            historyView.classList.add('hidden');
+            chatView.classList.remove('hidden');
+        });
+
+        // Send Message
+        function sendMessage() {
+            const text = userInput.value.trim();
+            if (text) {
+                hideEmptyState();
+                addMessage(text, 'user');
+                userInput.value = '';
+                vscode.postMessage({ type: 'askAI', text: text });
+            }
+        }
+
+        sendBtn.addEventListener('click', sendMessage);
+
+        userInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Helper Functions
+        function hideEmptyState() {
+            if (emptyState) {
+                emptyState.style.display = 'none';
+            }
+        }
+
+        function showEmptyState() {
+            if (emptyState && messagesDiv.children.length <= 1) {
+                emptyState.style.display = 'flex';
+            }
+        }
+
+        function formatJSON(obj) {
+            try {
+                if (typeof obj === 'string') {
+                    // Try to parse if it's a JSON string
+                    try {
+                        obj = JSON.parse(obj);
+                    } catch {
+                        return obj;
+                    }
+                }
+                return JSON.stringify(obj, null, 2);
+            } catch {
+                return String(obj);
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Message Handler
+        window.addEventListener('message', event => {
+            const message = event.data;
+            switch (message.type) {
+                case 'updateSessions':
+                    renderSessions(message.value);
+                    break;
+                case 'loadChat':
+                    renderChat(message.value);
+                    break;
+                case 'startStream':
+                    hideEmptyState();
+                    currentAiMessageContent = "";
+                    currentAiMessageDiv = document.createElement('div');
+                    currentAiMessageDiv.className = 'message ai';
+                    messagesDiv.appendChild(currentAiMessageDiv);
+                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                    break;
+                case 'chunk':
+                    if (currentAiMessageDiv) {
+                        currentAiMessageContent += message.value;
+                        currentAiMessageDiv.innerHTML = parseAndRenderContent(currentAiMessageContent);
+                        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                    }
+                    break;
+                case 'endStream':
+                    currentAiMessageDiv = null;
+                    break;
+                case 'addResponse':
+                    hideEmptyState();
+                    addMessage(message.value, 'ai');
+                    break;
+                case 'commandConfirm':
+                    showCommandConfirmDialog(message.id, message.command, message.cwd);
+                    break;
+                case 'requestPermission':
+                    showPermissionConfirm(message.id, message.request, message.dryRun);
+                    break;
+            }
+        });
+
+        // Render Functions
+        function renderSessions(sessions) {
+            sessionList.innerHTML = '';
+            if (sessions.length === 0) {
+                sessionList.innerHTML = `
+                    <div class="empty-state" style="height: auto; padding: 60px 20px;">
+                        <div class="empty-state-icon">📭</div>
+                        <div class="empty-state-text">No conversations yet</div>
+                        <div class="empty-state-hint">Start a new chat to begin</div>
+                    </div>
+                `;
+                return;
+            }
+
+            sessions.forEach(session => {
+                const div = document.createElement('div');
+                div.className = 'session-item';
+
+                const textDiv = document.createElement('div');
+                textDiv.className = 'session-item-text';
+
+                const icon = document.createElement('span');
+                icon.className = 'session-item-icon';
+                icon.textContent = '💬';
+
+                const span = document.createElement('span');
+                span.innerText = session.name;
+
+                const delBtn = document.createElement('button');
+                delBtn.className = 'delete-btn';
+                delBtn.innerHTML = '×';
+                delBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    vscode.postMessage({ type: 'deleteSession', id: session.id });
+                };
+
+                div.onclick = () => {
+                    vscode.postMessage({ type: 'selectSession', id: session.id });
+                    historyView.classList.add('hidden');
+                    chatView.classList.remove('hidden');
+                };
+
+                textDiv.appendChild(icon);
+                textDiv.appendChild(span);
+                div.appendChild(textDiv);
+                div.appendChild(delBtn);
+                sessionList.appendChild(div);
+            });
+        }
+
+        function renderChat(session) {
+            messagesDiv.innerHTML = '';
+
+            // Re-add empty state element
+            const newEmptyState = document.createElement('div');
+            newEmptyState.className = 'empty-state';
+            newEmptyState.id = 'emptyState';
+            newEmptyState.innerHTML = `
+                <div class="empty-state-icon">🤖</div>
+                <div class="empty-state-text">Start a conversation</div>
+                <div class="empty-state-hint">Ask me anything about your code...</div>
+            `;
+            messagesDiv.appendChild(newEmptyState);
+
+            if (session.messages.length === 0) {
+                newEmptyState.style.display = 'flex';
+            } else {
+                newEmptyState.style.display = 'none';
+                session.messages.forEach(msg => {
+                    addMessage(msg.content, msg.role === 'user' ? 'user' : 'ai');
+                });
+            }
+        }
+
+        function addMessage(text, type) {
+            hideEmptyState();
+            const msg = document.createElement('div');
+            msg.className = 'message ' + type;
+            if (type === 'ai') {
+                msg.innerHTML = parseAndRenderContent(text);
+            } else {
+                msg.innerText = text;
+            }
+            messagesDiv.appendChild(msg);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        // Parse tool call markdown and convert to UI components
+        function parseAndRenderContent(content) {
+            const toolStartPattern = /🔧 \*\*Calling Tool: ([^*]+)\*\*\n```json\n([\s\S]*?)```/g;
+            const toolResultPattern = /📋 \*\*Result:\*\*\n```json\n([\s\S]*?)```/g;
+
+            if (content.includes('🔧 **Calling Tool:')) {
+                let processedContent = content;
+                let toolCalls = [];
+                let match;
+                while ((match = toolStartPattern.exec(content)) !== null) {
+                    toolCalls.push({
+                        fullMatch: match[0],
+                        toolName: match[1],
+                        toolInput: match[2].trim(),
+                        index: match.index
+                    });
+                }
+                let results = [];
+                while ((match = toolResultPattern.exec(content)) !== null) {
+                    results.push({
+                        fullMatch: match[0],
+                        result: match[1].trim(),
+                        index: match.index
+                    });
+                }
+
+                let html = '';
+                let lastIndex = 0;
+
+                for (let i = 0; i < toolCalls.length; i++) {
+                    const tc = toolCalls[i];
+                    const textBefore = content.substring(lastIndex, tc.index);
+                    if (textBefore.trim()) {
+                        html += md.render(textBefore);
+                    }
+
+                    const result = results[i];
+                    let inputFormatted = tc.toolInput;
+                    try {
+                        inputFormatted = JSON.stringify(JSON.parse(tc.toolInput), null, 2);
+                    } catch { }
+
+                    const hasResult = result && result.result;
+                    const resultFormatted = hasResult ? result.result : '';
+
+                    html += `
+                        <div class="tool-call-card expanded">
+                            <div class="tool-call-header" onclick="this.parentElement.classList.toggle('expanded')">
+                                <div class="tool-call-icon">🔧</div>
+                                <div class="tool-call-info">
+                                    <div class="tool-call-name">${escapeHtml(tc.toolName)}</div>
+                                    <div class="tool-call-status">
+                                        ${hasResult
+                            ? '<span class="badge badge-success">✓ Complete</span>'
+                            : '<span class="badge badge-running"><span class="tool-call-spinner"></span> Running...</span>'
+                        }
+                                    </div>
+                                </div>
+                                <div class="tool-call-toggle">▼</div>
+                            </div>
+                            <div class="tool-call-body">
+                                <div class="tool-call-section">
+                                    <div class="tool-call-section-title">
+                                        <span class="icon">📥</span>
+                                        Input Parameters
+                                    </div>
+                                    <div class="tool-call-code">${escapeHtml(inputFormatted)}</div>
+                                </div>
+                                ${hasResult ? `
+                                <div class="tool-call-section tool-result-success">
+                                    <div class="tool-call-section-title">
+                                        <span class="icon">📤</span>
+                                        Output Result
+                                    </div>
+                                    <div class="tool-call-code">${escapeHtml(resultFormatted)}</div>
+                                </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+
+                    if (result) {
+                        lastIndex = result.index + result.fullMatch.length;
+                    } else {
+                        lastIndex = tc.index + tc.fullMatch.length;
+                    }
+                }
+
+                const textAfter = content.substring(lastIndex);
+                if (textAfter.trim()) {
+                    html += md.render(textAfter);
+                }
+                return html;
+            }
+            return md.render(content);
+        }
+
+        /**
+         * 显示命令确认对话框 (Legacy)
+         */
+        function showCommandConfirmDialog(id, command, cwd) {
+            const existing = document.querySelector('.command-confirm-overlay');
+            if (existing) existing.remove();
+
+            const overlay = document.createElement('div');
+            overlay.className = 'command-confirm-overlay';
+            overlay.innerHTML = `
+                <div class="command-confirm-modal">
+                    <div class="command-confirm-header">
+                        <div class="command-confirm-icon">⚠️</div>
+                        <div class="command-confirm-title">
+                            <h3>Terminal Command</h3>
+                            <p>AI wants to execute a command. Please review and confirm.</p>
+                        </div>
+                    </div>
+                    <div class="command-confirm-body">
+                        <div class="command-confirm-label">
+                            <span>💻</span> Command
+                        </div>
+                        <div class="command-confirm-code">${escapeHtml(command)}</div>
+                        ${cwd ? `<div class="command-confirm-cwd">Working directory: <span>${escapeHtml(cwd)}</span></div>` : ''}
+                    </div>
+                    <div class="command-confirm-actions">
+                        <button class="btn-reject" id="cmd-reject-${id}">✗ Reject</button>
+                        <button class="btn-confirm" id="cmd-confirm-${id}">✓ Run Command</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(overlay);
+            document.getElementById(`cmd-reject-${id}`).addEventListener('click', () => {
+                overlay.remove();
+                vscode.postMessage({ type: 'commandConfirmResponse', id: id, confirmed: false });
+            });
+            document.getElementById(`cmd-confirm-${id}`).addEventListener('click', () => {
+                overlay.remove();
+                vscode.postMessage({ type: 'commandConfirmResponse', id: id, confirmed: true });
+            });
+        }
+
+        /**
+         * 显示权限确认对话框 (New)
+         */
+        function showPermissionConfirm(id, request, dryRunMarkdown) {
+            const existing = document.querySelector('.command-confirm-overlay');
+            if (existing) existing.remove();
+
+            const overlay = document.createElement('div');
+            overlay.className = 'command-confirm-overlay';
+
+            const dryRunHtml = md.render(dryRunMarkdown);
+
+            overlay.innerHTML = `
+                <div class="command-confirm-modal" style="max-width: 600px;">
+                    <div class="command-confirm-header">
+                        <div class="command-confirm-icon">🛡️</div>
+                        <div class="command-confirm-title">
+                            <h3>Permission Required</h3>
+                            <p>The AI wants to perform a sensitive operation.</p>
+                        </div>
+                    </div>
+                    <div class="command-confirm-body">
+                         <div style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 4px; margin-bottom: 10px; font-size: 0.9em;">
+                            <strong>Tool:</strong> <code>${escapeHtml(request.toolName)}</code><br>
+                            <strong>Reason:</strong> ${escapeHtml(request.reason)}
+                        </div>
+                        <div class="command-confirm-label">
+                            <span>🔍</span> Operation Preview (Dry Run)
+                        </div>
+                        <div style="max-height: 200px; overflow-y: auto; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 4px; font-size: 0.9em;">
+                            ${dryRunHtml}
+                        </div>
+                    </div>
+                    <div class="command-confirm-actions">
+                        <button class="btn-reject" id="perm-reject-${id}">✗ Deny</button>
+                        <button class="btn-confirm" id="perm-confirm-${id}">✓ Approve</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(overlay);
+
+            document.getElementById(`perm-reject-${id}`).addEventListener('click', () => {
+                overlay.remove();
+                vscode.postMessage({ type: 'permissionResponse', id, granted: false });
+            });
+            document.getElementById(`perm-confirm-${id}`).addEventListener('click', () => {
+                overlay.remove();
+                vscode.postMessage({ type: 'permissionResponse', id, granted: true });
+            });
+        }
+    </script>
+</body>
+
+</html>

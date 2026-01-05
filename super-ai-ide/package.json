@@ -1,0 +1,88 @@
+{
+    "name": "super-ai-ide",
+    "publisher": "me",
+    "displayName": "Super AI IDE",
+    "description": "A super AI IDE extension",
+    "version": "0.0.1",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/your-username/super-ai-ide"
+    },
+    "license": "MIT",
+    "engines": {
+        "vscode": "^1.80.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [],
+    "main": "./out/extension.js",
+    "contributes": {
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "super-ai-ide-sidebar",
+                    "title": "Super AI",
+                    "icon": "media/robot.svg"
+                }
+            ]
+        },
+        "views": {
+            "super-ai-ide-sidebar": [
+                {
+                    "type": "webview",
+                    "id": "super-ai-ide.sidebarView",
+                    "name": "AI Chat"
+                }
+            ]
+        },
+        "configuration": {
+            "title": "Super AI IDE",
+            "properties": {
+                "super-ai-ide.openRouterApiKey": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Your OpenRouter API Key",
+                    "order": 1
+                },
+                "super-ai-ide.model": {
+                    "type": "string",
+                    "default": "deepseek/deepseek-chat",
+                    "description": "The Model ID to use via OpenRouter (recommend models with tool calling support)",
+                    "order": 2
+                }
+            }
+        },
+        "commands": [
+            {
+                "command": "super-ai-ide.helloWorld",
+                "title": "Hello World"
+            }
+        ]
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "pretest": "npm run compile && npm run lint",
+        "lint": "eslint src --ext ts",
+        "test": "vscode-test",
+        "package": "vsce package"
+    },
+    "devDependencies": {
+        "@types/node": "18.x",
+        "@types/vscode": "^1.80.0",
+        "@typescript-eslint/eslint-plugin": "^6.0.0",
+        "@typescript-eslint/parser": "^6.0.0",
+        "eslint": "^8.0.0",
+        "typescript": "^5.0.0"
+    },
+    "dependencies": {
+        "@langchain/core": "^1.1.8",
+        "@langchain/langgraph": "^1.0.7",
+        "@langchain/openai": "^1.2.0",
+        "@types/markdown-it": "^14.1.2",
+        "markdown-it": "^14.1.0",
+        "zod": "^4.3.5"
+    }
+}

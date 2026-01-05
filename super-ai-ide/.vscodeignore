@@ -1,0 +1,25 @@
+# Source files (compiled to out/)
+src/**
+
+# Development files
+.vscode/**
+.vscode-test/**
+
+# Config files
+.gitignore
+.eslintrc.json
+tsconfig.json
+
+# Package files
+node_modules/**
+package-lock.json
+
+# Test files
+**/test/**
+**/*.test.ts
+
+# Build artifacts
+*.vsix
+
+# Documentation (optional, remove if you want to include)
+# README.md
