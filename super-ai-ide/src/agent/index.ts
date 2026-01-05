@@ -62,7 +62,36 @@ export async function runAgentWithStream(
         const enhancedMessages = convertToEnhancedMessages(messages);
 
         // 1.1 消息压缩
-        const compactedMessages = await contextManager.compactMessages(enhancedMessages);
+        // 1.1 消息压缩
+        const summarizer = async (text: string): Promise<string> => {
+            try {
+                const summaryProvider = ProviderFactory.getProvider(config.provider || "openrouter");
+                const summaryModel = summaryProvider.createModel({
+                    apiKey: config.apiKey,
+                    modelName: config.model,
+                    baseUrl: config.baseUrl,
+                    temperature: 0.3
+                });
+
+                const response = await summaryModel.invoke([
+                    new SystemMessage("You are an expert technical writer. Summarize the following conversation history for a developer."),
+                    new HumanMessage(`Please summarize the key technical decisions, user requirements, and current project state from this conversation history. Keep it concise.\n\nHistory:\n${text}`)
+                ]);
+
+                if (typeof response.content === 'string') return response.content;
+                if (Array.isArray(response.content)) {
+                    return response.content
+                        .map(c => typeof c === 'string' ? c : (c as any).text || '')
+                        .join('');
+                }
+                return "Summary generation failed.";
+            } catch (e) {
+                console.error("Summary generation error:", e);
+                return "Summary generation failed due to error.";
+            }
+        };
+
+        const compactedMessages = await contextManager.compactMessages(enhancedMessages, summarizer);
 
         // 1.2 生成项目感知 Prompt
         const baseSystemPrompt = SYSTEM_PROMPT;

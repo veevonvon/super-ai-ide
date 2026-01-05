@@ -11,11 +11,6 @@ Agent 的“大脑”如何思考和采取行动。
 二、 上下文管理 (Context & Token Management)
 如何让 Agent 在有限的长文本窗口内处理大型项目。
 
-动态上下文压缩 (Compaction/Summarization)：
-
-当 Token 接近上限时，自动对旧的交互历史进行摘要总结。
-
-保留关键决策和当前状态，丢弃冗余的中间过程。
 
 代码感知提示词 (Project-Aware Prompting)：
 
