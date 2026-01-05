@@ -12,11 +12,7 @@ export function activate(context: vscode.ExtensionContext) {
         )
     );
 
-    let disposable = vscode.commands.registerCommand('super-ai-ide.helloWorld', () => {
-        vscode.window.showInformationMessage('Hello World from Super AI IDE!');
-    });
 
-    context.subscriptions.push(disposable);
 }
 
 export function deactivate() { }

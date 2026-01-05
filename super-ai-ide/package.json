@@ -52,13 +52,7 @@
                     "order": 2
                 }
             }
-        },
-        "commands": [
-            {
-                "command": "super-ai-ide.helloWorld",
-                "title": "Hello World"
-            }
-        ]
+        }
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",

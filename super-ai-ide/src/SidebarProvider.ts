@@ -84,16 +84,10 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                     }
                     break;
                 }
-                // 处理旧版命令确认响应 (保留兼容性)
-                case "commandConfirmResponse": {
-                    const { id, confirmed } = data;
-                    const pending = this._pendingPermissions.get(id);
-                    if (pending) {
-                        pending.resolve({ granted: confirmed });
-                        this._pendingPermissions.delete(id);
-                    }
-                    break;
-                }
+                // case "commandConfirmResponse": {
+                //    Legacy code removed
+                //    break;
+                // }
                 case "openSettings": {
                     vscode.commands.executeCommand('workbench.action.openSettings', 'super-ai-ide');
                     break;
