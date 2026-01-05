@@ -9,7 +9,7 @@ export function createRequestSubAgentTool(config: AgentConfig) {
     return tool(
         async ({ goal, task, role, context }) => {
             // Dynamic import to avoid circular dependency
-            const { runAgent } = await import("./index");
+            const { runAgent } = await import("./index.js");
 
             const subAgentGoals = goal || task;
             const subAgentRole = role || "Specialized Assistant";
