@@ -16,6 +16,7 @@ A powerful AI coding assistant extension for VS Code, powered by **LangGraph** a
 - 💬 **Multi-Session Support** - Save and manage multiple chat conversations
 - 🌐 **Multi-Provider Architecture** - Seamlessly switch between OpenRouter, OpenAI, and Anthropic
 - 🐳 **Docker & Shell Isolation** - Execute commands safely in Docker containers or custom shells
+- 🔘 **Quick Toggle** - Toggle AI Sidebar from editor title menu
 
 ## 📁 Project Structure
 
@@ -162,7 +163,7 @@ npm run watch
 
 1. Press `F5` in VS Code
 2. A new Extension Development Host window opens
-3. Click the **Super AI** icon in the Activity Bar
+3. Click the **Super AI** icon in the Auxiliary Bar (Secondary Sidebar)
 
 ### Build for Production
 

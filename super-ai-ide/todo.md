@@ -2,12 +2,3 @@
 
 ------
 
-
-三、 安全与控制 (Security & Permissions)
-确保 AI 不会对代码库造成不可逆的破坏。
-
-
-
-四、 开发者工具链 (Developer Toolset)
-Agent 能够调用的“手”。
-

@@ -276,11 +276,11 @@ export class ContextManager {
 
                 // 检测框架
                 const deps = { ...packageJson.dependencies, ...packageJson.devDependencies };
-                if (deps["react"]) metadata.framework = "React";
-                else if (deps["vue"]) metadata.framework = "Vue";
-                else if (deps["@angular/core"]) metadata.framework = "Angular";
-                else if (deps["next"]) metadata.framework = "Next.js";
-                else if (deps["express"]) metadata.framework = "Express";
+                if (deps["react"]) {metadata.framework = "React";}
+                else if (deps["vue"]) {metadata.framework = "Vue";}
+                else if (deps["@angular/core"]) {metadata.framework = "Angular";}
+                else if (deps["next"]) {metadata.framework = "Next.js";}
+                else if (deps["express"]) {metadata.framework = "Express";}
             }
 
             // 检查 requirements.txt (Python)
@@ -290,9 +290,9 @@ export class ContextManager {
                 const content = fs.readFileSync(requirementsPath, "utf-8");
                 metadata.dependencies = content.split("\n").filter(l => l.trim()).slice(0, 10);
 
-                if (content.includes("django")) metadata.framework = "Django";
-                else if (content.includes("flask")) metadata.framework = "Flask";
-                else if (content.includes("fastapi")) metadata.framework = "FastAPI";
+                if (content.includes("django")) {metadata.framework = "Django";}
+                else if (content.includes("flask")) {metadata.framework = "Flask";}
+                else if (content.includes("fastapi")) {metadata.framework = "FastAPI";}
             }
 
             // 检查 Cargo.toml (Rust)
@@ -329,7 +329,7 @@ export class ContextManager {
      * 生成文件结构字符串
      */
     private generateFileStructure(dirPath: string, maxDepth: number, currentDepth = 0): string {
-        if (currentDepth >= maxDepth) return "";
+        if (currentDepth >= maxDepth) {return "";}
 
         const indent = "  ".repeat(currentDepth);
         let result = "";

@@ -12,6 +12,12 @@ export function activate(context: vscode.ExtensionContext) {
         )
     );
 
+    context.subscriptions.push(
+        vscode.commands.registerCommand("super-ai-ide.toggleSidebar", () => {
+            vscode.commands.executeCommand("super-ai-ide.sidebarView.focus");
+        })
+    );
+
 
 }
 

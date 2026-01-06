@@ -369,7 +369,7 @@ export class PermissionManager {
             for (const sensitive of sensitivePaths) {
                 if (affectedPath.includes(sensitive)) {
                     warnings.push(`⚠️ Operation affects sensitive path: ${sensitive}`);
-                    if (estimatedImpact === "low") estimatedImpact = "medium";
+                    if (estimatedImpact === "low") {estimatedImpact = "medium";}
                 }
             }
         }

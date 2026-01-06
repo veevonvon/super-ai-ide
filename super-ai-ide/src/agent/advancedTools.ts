@@ -270,7 +270,7 @@ function findPreviousContext(patchLines: string[], currentIndex: number): string
 }
 
 function findInsertPosition(lines: string[], context: string, offset: number): number {
-    if (!context) return lines.length;
+    if (!context) {return lines.length;}
 
     for (let i = 0; i < lines.length; i++) {
         if (lines[i].trim() === context.trim()) {
@@ -432,12 +432,12 @@ async function nodeGrepSearch(options: GrepOptions & { caseSensitive: boolean })
     const regex = new RegExp(options.pattern, options.caseSensitive ? "g" : "gi");
 
     function searchDir(dir: string) {
-        if (results.length >= options.maxResults) return;
+        if (results.length >= options.maxResults) {return;}
 
         const entries = fs.readdirSync(dir, { withFileTypes: true });
 
         for (const entry of entries) {
-            if (results.length >= options.maxResults) break;
+            if (results.length >= options.maxResults) {break;}
 
             const fullPath = path.join(dir, entry.name);
             const relPath = path.relative(options.rootPath, fullPath);

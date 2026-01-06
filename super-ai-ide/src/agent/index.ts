@@ -83,7 +83,7 @@ export async function runAgentWithStream(
                     new HumanMessage(`Please summarize the key technical decisions, user requirements, and current project state from this conversation history. Keep it concise.\n\nHistory:\n${text}`)
                 ]);
 
-                if (typeof response.content === 'string') return response.content;
+                if (typeof response.content === 'string') {return response.content;}
                 if (Array.isArray(response.content)) {
                     return response.content
                         .map(c => typeof c === 'string' ? c : (c as any).text || '')

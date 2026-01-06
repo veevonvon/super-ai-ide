@@ -19,16 +19,16 @@
     "main": "./out/extension.js",
     "contributes": {
         "viewsContainers": {
-            "activitybar": [
+            "auxiliarybar": [
                 {
-                    "id": "super-ai-ide-sidebar",
+                    "id": "super-ai-ide-auxiliary",
                     "title": "Super AI",
                     "icon": "media/robot.svg"
                 }
             ]
         },
         "views": {
-            "super-ai-ide-sidebar": [
+            "super-ai-ide-auxiliary": [
                 {
                     "type": "webview",
                     "id": "super-ai-ide.sidebarView",
@@ -97,6 +97,21 @@
                     "order": 8
                 }
             }
+        },
+        "commands": [
+            {
+                "command": "super-ai-ide.toggleSidebar",
+                "title": "Toggle AI Chat",
+                "icon": "$(hubot)"
+            }
+        ],
+        "menus": {
+            "editor/title": [
+                {
+                    "command": "super-ai-ide.toggleSidebar",
+                    "group": "navigation"
+                }
+            ]
         }
     },
     "scripts": {
