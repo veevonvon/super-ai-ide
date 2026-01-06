@@ -84,7 +84,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                 }
                 case "askAI": {
                     const { text } = data;
-                    if (!text) {return;}
+                    if (!text) { return; }
 
                     await this._handleAskAI(text, webviewView);
                     break;
@@ -355,11 +355,11 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
     private async _addTag(messageId: string, tag: string) {
         const sessions = this._getSessions();
         const session = sessions.find(s => s.id === this._currentSessionId);
-        if (!session) {return;}
+        if (!session) { return; }
 
         const message = session.messages.find(m => m.id === messageId);
         if (message) {
-            if (!message.tags) {message.tags = [];}
+            if (!message.tags) { message.tags = []; }
             if (!message.tags.includes(tag)) {
                 message.tags.push(tag);
                 await this._saveSessions(sessions);
@@ -373,7 +373,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
     private async _removeTag(messageId: string, tag: string) {
         const sessions = this._getSessions();
         const session = sessions.find(s => s.id === this._currentSessionId);
-        if (!session) {return;}
+        if (!session) { return; }
 
         const message = session.messages.find(m => m.id === messageId);
         if (message && message.tags) {
@@ -388,10 +388,10 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
     private async _forkSession(messageId: string) {
         const sessions = this._getSessions();
         const currentSession = sessions.find(s => s.id === this._currentSessionId);
-        if (!currentSession) {return;}
+        if (!currentSession) { return; }
 
         const messageIndex = currentSession.messages.findIndex(m => m.id === messageId);
-        if (messageIndex === -1) {return;}
+        if (messageIndex === -1) { return; }
 
         // Clone messages up to the point of fork
         // We regenerate IDs for the new session to keep them independent
@@ -418,9 +418,18 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
     private _getHtmlForWebview(webview: vscode.Webview): string {
         const htmlPath = path.join(this._context.extensionPath, 'src', 'webview', 'index.html');
+        const stylePath = vscode.Uri.file(path.join(this._context.extensionPath, 'src', 'webview', 'style.css'));
+        const scriptPath = vscode.Uri.file(path.join(this._context.extensionPath, 'src', 'webview', 'script.js'));
+
+        const styleUri = webview.asWebviewUri(stylePath);
+        const scriptUri = webview.asWebviewUri(scriptPath);
+
         try {
             if (fs.existsSync(htmlPath)) {
-                return fs.readFileSync(htmlPath, 'utf-8');
+                let html = fs.readFileSync(htmlPath, 'utf-8');
+                html = html.replace('<!-- CSS_URI -->', styleUri.toString());
+                html = html.replace('<!-- JS_URI -->', scriptUri.toString());
+                return html;
             }
         } catch (e) {
             console.error('Failed to read webview HTML file:', e);

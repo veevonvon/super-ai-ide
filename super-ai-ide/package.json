@@ -19,16 +19,16 @@
     "main": "./out/extension.js",
     "contributes": {
         "viewsContainers": {
-            "auxiliarybar": [
+            "activitybar": [
                 {
-                    "id": "super-ai-ide-auxiliary",
+                    "id": "super-ai-ide-container",
                     "title": "Super AI",
                     "icon": "media/robot.svg"
                 }
             ]
         },
         "views": {
-            "super-ai-ide-auxiliary": [
+            "super-ai-ide-container": [
                 {
                     "type": "webview",
                     "id": "super-ai-ide.sidebarView",

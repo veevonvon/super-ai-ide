@@ -1,0 +1,693 @@
+:root {
+    /* Pikachu Theme Palette from Calendar */
+    --pika-yellow-main: #FFD700;
+    --pika-yellow-light: #FFF8DC;
+    --pika-orange: #FFA500;
+    --pika-brown: #8B4513;
+    --pika-red: #FF6B6B;
+    --pika-red-dark: #EE5A5A;
+    --pika-cream: #FFF8DC;
+
+    /* Functional Colors */
+    --bg-color: #FFF8DC;
+    /* Cream background like calendar */
+    --panel-bg: rgba(255, 255, 255, 0.6);
+    --text-color: var(--pika-brown);
+    --border-color: var(--pika-brown);
+
+    /* Design Tokens */
+    --border-width: 2px;
+    --border-style: solid;
+    --border-style-dashed: dashed;
+    --radius-md: 15px;
+    --radius-lg: 25px;
+    --shadow-hard: 3px 3px 0px var(--pika-brown);
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, var(--pika-yellow-main) 0%, var(--pika-orange) 100%);
+    --gradient-red: linear-gradient(145deg, var(--pika-red), var(--pika-red-dark));
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Comic Sans MS', 'Arial', sans-serif;
+    /* Matching calendar font */
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    color: var(--text-color);
+    background: linear-gradient(135deg, #FFE135 0%, #FFD700 50%, #FFA500 100%);
+    /* Full Pika Background */
+    overflow: hidden;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--pika-orange);
+    border-radius: 10px;
+    border: 2px solid var(--pika-brown);
+}
+
+/* Layout */
+.view {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.4);
+    /* Glass effect overlay */
+    backdrop-filter: blur(5px);
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Header */
+.header {
+    padding: 12px 16px;
+    border-bottom: 3px dashed var(--pika-brown);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--pika-yellow-light);
+}
+
+.header-title {
+    font-size: 1.2em;
+    font-weight: 800;
+    color: var(--pika-brown);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.header-title::before {
+    content: '⚡';
+}
+
+.header-title::after {
+    content: '⚡';
+}
+
+/* Session List */
+.session-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+}
+
+.session-item {
+    padding: 12px 16px;
+    margin-bottom: 12px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    border: 2px solid var(--pika-brown);
+    box-shadow: var(--shadow-hard);
+    transition: all 0.2s;
+    color: var(--pika-brown);
+}
+
+.session-item:hover {
+    transform: translate(-2px, -2px) rotate(-1deg);
+    box-shadow: 5px 5px 0px var(--pika-brown);
+    background: var(--pika-yellow-main);
+}
+
+.session-item.active {
+    background: var(--pika-yellow-main);
+    font-weight: bold;
+}
+
+.session-item-text {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    overflow: hidden;
+}
+
+.delete-btn {
+    background: var(--pika-red);
+    color: white;
+    border: 2px solid var(--pika-brown);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.session-item:hover .delete-btn {
+    opacity: 1;
+}
+
+.delete-btn:hover {
+    transform: scale(1.1);
+}
+
+/* Chat Area */
+.messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Inputs */
+.input-group {
+    padding: 20px;
+    border-top: 3px dashed var(--pika-brown);
+    display: flex;
+    gap: 12px;
+    background: var(--pika-yellow-light);
+}
+
+input {
+    flex: 1;
+    padding: 12px 16px;
+    background: white;
+    color: var(--pika-brown);
+    border: 2px solid var(--pika-brown);
+    border-radius: var(--radius-md);
+    font-size: 1em;
+    font-family: inherit;
+    box-shadow: inset 2px 2px 5px rgba(139, 69, 19, 0.1);
+}
+
+input:focus {
+    outline: none;
+    background: #FFF;
+    border-color: var(--pika-orange);
+    box-shadow: 0 0 0 3px rgba(255, 165, 0, 0.3);
+}
+
+/* Buttons */
+button {
+    padding: 10px 20px;
+    background: var(--gradient-primary);
+    color: var(--pika-brown);
+    border: 2px solid var(--pika-brown);
+    border-radius: var(--radius-md);
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: var(--shadow-hard);
+    transition: all 0.2s;
+    font-family: inherit;
+    text-transform: uppercase;
+}
+
+button:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0px var(--pika-brown);
+    filter: brightness(1.1);
+}
+
+button:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0px var(--pika-brown);
+}
+
+button.icon-btn {
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2em;
+    background: white;
+}
+
+button.icon-btn:hover {
+    background: var(--pika-yellow-main);
+}
+
+/* Message Bubbles */
+.message {
+    padding: 16px 20px;
+    border-radius: var(--radius-lg);
+    line-height: 1.6;
+    position: relative;
+    border: 2px solid var(--pika-brown);
+    box-shadow: var(--shadow-hard);
+    max-width: 85%;
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.message.user {
+    align-self: flex-end;
+    background: var(--gradient-primary);
+    color: var(--pika-brown);
+    border-bottom-right-radius: 4px;
+}
+
+.message.ai {
+    align-self: flex-start;
+    background: white;
+    color: var(--pika-brown);
+    border-bottom-left-radius: 4px;
+}
+
+/* Markdown Styles in AI Message */
+.message.ai pre {
+    background: #2b2b2b;
+    color: #f8f8f2;
+    padding: 15px;
+    border-radius: 10px;
+    overflow-x: auto;
+    border: 2px solid var(--pika-brown);
+    margin: 10px 0;
+}
+
+.message.ai code {
+    font-family: 'Consolas', monospace;
+    background: rgba(139, 69, 19, 0.1);
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+
+.message.ai pre code {
+    background: transparent;
+    padding: 0;
+    color: inherit;
+}
+
+/* Tool Call Styling - The "Not Coordinated" Fix */
+.tool-call-card {
+    background-color: white;
+    border-radius: var(--radius-md);
+    margin: 20px 0;
+    overflow: hidden;
+    box-shadow: 4px 4px 0px rgba(139, 69, 19, 0.2);
+}
+
+.tool-call-card.running {
+    /* Animated Dashed Border (Marching Ants) */
+    background-image:
+        linear-gradient(90deg, var(--pika-brown) 50%, transparent 50%),
+        linear-gradient(90deg, var(--pika-brown) 50%, transparent 50%),
+        linear-gradient(0deg, var(--pika-brown) 50%, transparent 50%),
+        linear-gradient(0deg, var(--pika-brown) 50%, transparent 50%);
+    background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+    background-size: 20px 3px, 20px 3px, 3px 20px, 3px 20px;
+    background-position: 0 0, 0 100%, 0 0, 100% 0;
+    animation: border-dance 1s infinite linear;
+    border: none;
+    padding: 3px;
+    /* Space for the "border" */
+}
+
+.tool-call-card.complete {
+    border: 3px dashed var(--pika-brown);
+}
+
+@keyframes border-dance {
+    0% {
+        background-position: 0 0, 100% 100%, 0 100%, 100% 0;
+    }
+
+    100% {
+        background-position: 40px 0, -40px 100%, 0 -40px, 100% 40px;
+    }
+}
+
+.tool-call-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: rgba(255, 215, 0, 0.15);
+    /* Very light yellow */
+    color: var(--pika-brown);
+    cursor: pointer;
+    font-weight: bold;
+    border-bottom: 2px dashed rgba(139, 69, 19, 0.1);
+}
+
+.tool-call-header:hover {
+    background: rgba(255, 215, 0, 0.3);
+}
+
+.tool-call-icon {
+    width: 32px;
+    height: 32px;
+    background: var(--pika-yellow-main);
+    border: 2px solid var(--pika-brown);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--pika-brown);
+}
+
+.tool-call-name {
+    font-family: 'Comic Sans MS', cursive;
+    text-transform: uppercase;
+    font-size: 0.9em;
+}
+
+.tool-call-info {
+    flex: 1;
+}
+
+.tool-call-toggle {
+    font-size: 0.8em;
+    opacity: 0.6;
+}
+
+.tool-call-body {
+    display: none;
+    background: #FFFAF0;
+    /* Floral White */
+    padding: 10px;
+}
+
+.tool-call-card.expanded .tool-call-body {
+    display: block;
+}
+
+.tool-call-section {
+    margin-bottom: 10px;
+}
+
+.tool-call-section-title {
+    font-size: 0.8em;
+    font-weight: bold;
+    color: var(--pika-orange);
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.tool-call-code {
+    background: white;
+    border: 2px solid #E0E0E0;
+    color: #555;
+    padding: 10px;
+    border-radius: 8px;
+    font-family: monospace;
+    font-size: 0.85em;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+/* Status Badges */
+.badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 0.75em;
+    border: 2px solid;
+    background: white;
+}
+
+.badge-success {
+    color: #4CAF50;
+    border-color: #4CAF50;
+}
+
+.badge-running {
+    color: var(--pika-orange);
+    border-color: var(--pika-orange);
+}
+
+.tool-call-spinner {
+    width: 12px;
+    height: 12px;
+    border: 2px solid var(--pika-orange);
+    border-top-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Empty State */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    padding: 40px;
+    text-align: center;
+    color: var(--pika-brown);
+}
+
+.empty-state-icon {
+    font-size: 5em;
+    color: var(--pika-yellow-main);
+    filter: drop-shadow(4px 4px 0px var(--pika-brown));
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.empty-state-text {
+    font-size: 1.5em;
+    font-weight: 800;
+    margin-top: 20px;
+}
+
+/* Overlays */
+.command-confirm-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(139, 69, 19, 0.4);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.command-confirm-modal {
+    background: var(--pika-yellow-light);
+    border: 4px solid var(--pika-brown);
+    box-shadow: 10px 10px 0px rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-lg);
+    width: 90%;
+    max-width: 500px;
+    padding: 25px;
+    animation: popIn 0.3s;
+    position: relative;
+}
+
+.command-confirm-header {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.command-confirm-title h3 {
+    margin: 0;
+    color: var(--pika-brown);
+}
+
+.command-confirm-code {
+    background: white;
+    border: 2px dashed var(--pika-brown);
+    padding: 15px;
+    border-radius: 10px;
+    font-family: monospace;
+    color: #333;
+}
+
+.command-confirm-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.btn-confirm {
+    background: #4CAF50;
+    color: white;
+    border-color: #2E7D32;
+}
+
+.btn-reject {
+    background: var(--pika-red);
+    color: white;
+    border-color: #C62828;
+}
+
+/* SVG Helpers */
+.icon-svg {
+    width: 1.2em;
+    height: 1.2em;
+    vertical-align: middle;
+    stroke-width: 2.5;
+}
+
+/* Tags */
+.message-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.message-tag {
+    background: white;
+    border: 2px solid var(--pika-brown);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75em;
+    font-weight: bold;
+    color: var(--pika-brown);
+}
+
+
+.add-tag-btn {
+    border: 1px dashed var(--pika-brown);
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 12px;
+    padding: 2px 8px;
+    cursor: pointer;
+    color: var(--pika-brown);
+}
+
+/* Header Sections */
+.header-left,
+.header-right {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+/* Loading Indicator */
+.loading-message {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    color: var(--pika-brown);
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: var(--radius-lg);
+    border: 2px dashed var(--pika-brown);
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+    animation: pulse 2s infinite;
+}
+
+.loading-spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid var(--pika-orange);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.8;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.8;
+    }
+}
+
+/* Error Message */
+.message.error {
+    align-self: flex-start;
+    background: #FFF0F0;
+    color: #D32F2F;
+    border-color: #D32F2F;
+    border-bottom-left-radius: 4px;
+}
+
+/* Streaming State - Moving Dashed Line Effect */
+.message.ai.streaming {
+    border-style: dashed;
+    border-width: 3px;
+    border-color: var(--pika-orange);
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-size: 40px 40px;
+    animation: border-pulse 0.5s infinite alternate, stripe-move 1s linear infinite;
+    box-shadow: 0 0 10px rgba(255, 165, 0, 0.2);
+}
+
+@keyframes border-pulse {
+    from {
+        border-color: var(--pika-orange);
+    }
+
+    to {
+        border-color: var(--pika-brown);
+    }
+}
+
+@keyframes stripe-move {
+    0% {
+        background-position: 0 0;
+    }
+
+    100% {
+        background-position: 40px 40px;
+    }
+}

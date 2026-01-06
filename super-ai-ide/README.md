@@ -38,7 +38,9 @@ super-ai-ide/
 │   │   ├── types.ts          # Shared types
 │   │   └── subAgentTool.ts   # Sub-agent orchestration tool
 │   └── webview/
-│       └── index.html        # Chat UI template
+│       ├── index.html        # Chat UI template
+│       ├── style.css         # UI Styles
+│       └── script.js         # UI Logic
 ├── out/                      # Compiled JavaScript output
 ├── package.json              # Extension manifest & config
 ├── tsconfig.json             # TypeScript configuration
@@ -163,7 +165,7 @@ npm run watch
 
 1. Press `F5` in VS Code
 2. A new Extension Development Host window opens
-3. Click the **Super AI** icon in the Auxiliary Bar (Secondary Sidebar)
+3. Click the **Super AI** icon in the Activity Bar
 
 ### Build for Production
 
